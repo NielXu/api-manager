@@ -1,6 +1,8 @@
 import api
 import json
 import config
+import os
+from google.cloud import translate
 
 
 class GoogleDistMatrix():
@@ -147,32 +149,38 @@ class GoogleDistMatrix():
                 col = i
         if row != -1 and col != -1:
             return table[row][col]
+    
 
 
-if __name__ == '__main__':
-    origins = [
-        "17 wiggens crt",
-        "28 rosebank dr"
-    ]
-    des = [
-        "1235 Military Trail",
-        "2260 Markham Rd"
-    ]
-    matrix = GoogleDistMatrix(origins, des, config.googlemap_key)
-    # Pint distance table
-    dist_table = matrix.dist_table()
-    for i in range(len(dist_table)):
-        p = ""
-        for j in range(len(dist_table[i])):
-            p += origins[i] + " to " + des[j] + ": " + dist_table[i][j] + "\t"
-        print(p)
-        dist_table = matrix.dist_table()
-    print()
-    # Print duration table
-    dura_table = matrix.dura_table()
-    for i in range(len(dura_table)):
-        p = ""
-        for j in range(len(dura_table[i])):
-            p += origins[i] + " to " + des[j] + ": " + dura_table[i][j] + "\t"
-        print(p)
-    print()
+class GoogleTranslate():
+    '''Tool for translating texts using Google Translate API.
+    @param:
+    -------
+    text:
+        The text that will be translated, can be a str or list
+    target:
+        The target language, should be language code.
+        See: https://cloud.google.com/translate/docs/languages
+    key_location:
+        Your application credential location, should be a json file.
+        See: https://cloud.google.com/translate/docs/quickstart-client-libraries
+    '''
+    def __init__(self, text, target, key_location):
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = key_location
+        client = translate.Client()
+        self.trans = client.translate(
+            text,
+            target_language=target
+        )
+    
+    def trans_map(self):
+        '''Get a map that use input text as keys and translated text
+        as values.
+        '''
+        result = {}
+        if type(self.trans) == list:
+            for t in self.trans:
+                result[t['input']] = t['translatedText']
+        else:
+            result[self.trans['input']] = self.trans['translatedText']
+        return result
