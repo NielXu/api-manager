@@ -184,3 +184,57 @@ class GoogleTranslate():
         else:
             result[self.trans['input']] = self.trans['translatedText']
         return result
+
+def distancematrix_example():
+    print("++++++++++ GOOGLE DISTANCE MATRIX ++++++++++")
+    origins = [
+        "1235 Military Trail",
+        "29 Rosebank Dr"
+    ]
+    des = [
+        "2025 Midland Ave",
+        "yorkdale shopping center"
+    ]
+    key = config.googlemap_key
+    g = GoogleDistMatrix(origins, des, key)
+    print("Distance Table:")
+    dt = g.dist_table()
+    for row in dt:
+        print(row)
+    
+    print("Distance Matrix:")
+    dm = g.dist_matrix()
+    for row in dm:
+        print(row)
+    
+    print("Duration Table:")
+    durt = g.dura_table()
+    for row in durt:
+        print(row)
+    
+    print("Duration Matrix:")
+    durm = g.dura_matrix()
+    for row in durm:
+        print(row)
+    
+    print("Distance between origins and destinations")
+    for o in origins:
+        for d in des:
+            print(o+" to "+d+" is "+g.dist(o, d))
+    print()
+
+def trans_example():
+    print("++++++++++ GOOGLE TRANSLATE ++++++++++")
+    text = [
+        "Hello world!",
+        "This is a tool for translation"
+    ]
+    target = "zh-CN"
+    loc = config.googletrans_key_loc
+    g = GoogleTranslate(text, target, loc)
+    print(g.trans_map())
+
+
+if __name__ == '__main__':
+    distancematrix_example()
+    trans_example()
