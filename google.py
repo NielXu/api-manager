@@ -4,6 +4,17 @@ import config
 
 
 class GoogleDistMatrix():
+    '''Tool for Google Distance Matrix API, can get distance matrices between
+    origins and destinations.
+    @param:
+    -------
+    origins:
+        A list of addresses, or str if only one address
+    destinations:
+        A list of destinations, or str if only one address
+    key:
+        API key
+    '''
     def __init__(self, origins, destinations, key):
         param_map = self._map(origins, destinations, key)
         replace = {" ":"+"}
@@ -14,6 +25,7 @@ class GoogleDistMatrix():
         self.destinations = destinations
     
     def _map(self, origins, destinations, key):
+        'Setup the param map'
         if type(origins) == list and len(origins) > 1:
             origins = ["|"] + origins
         if type(destinations) == list and len(destinations) > 1:
@@ -25,6 +37,11 @@ class GoogleDistMatrix():
         }
     
     def raw_table(self):
+        '''Get the raw table of the data, which means the data
+        are in json format that returned by google server. The label
+        of the row are destinations, and the label of the columns
+        are origins.
+        '''
         rows = self.data['rows']
         table = []
         for row in rows:
@@ -32,6 +49,17 @@ class GoogleDistMatrix():
         return table
     
     def dist_table(self):
+        '''Get the distance table of the data, which means that each
+        element in the table represents the distance between origin
+        and destination. The label of the row are destinations,
+        and the label of the columns are origins.
+        @Element format:
+        ---------------
+            int(str)
+        @Example:
+        --------
+            5099(5.1 km)
+        '''
         raw = self.raw_table()
         table = []
         for row in raw:
@@ -42,6 +70,16 @@ class GoogleDistMatrix():
         return table
     
     def dist_matrix(self):
+        '''Get the distance in matrix format, each element
+        represents the distance between origin to destination.
+        `[
+            o1-d1, o1-d2, o1-d3, ..., o1-dn
+            o2-d1, o2-d2, o2-d3, ..., o2-dn
+            ...
+            om-d1, om-d2, om-d3, ..., om-dn
+        ]`
+        oi-dj means from origin i to destination j
+        '''
         raw = self.raw_table()
         table = []
         for row in raw:
@@ -52,6 +90,17 @@ class GoogleDistMatrix():
         return table
     
     def dura_table(self):
+        '''Get the duration table of the data, which means that each
+        element in the table represents the time it takes to travel
+        from origin to destination. The label of the row are destinations,
+        and the label of the columns are origins.
+        @Element format:
+        ---------------
+            int(str)
+        @Example:
+        --------
+            504(8 mins)
+        '''
         raw = self.raw_table()
         table = []
         for row in raw:
@@ -62,6 +111,17 @@ class GoogleDistMatrix():
         return table
     
     def dura_matrix(self):
+        '''Get the duration in matrix format, each element
+        represents the time it takes to travel from origin
+        to destination.
+        `[
+            o1-d1, o1-d2, o1-d3, ..., o1-dn
+            o2-d1, o2-d2, o2-d3, ..., o2-dn
+            ...
+            om-d1, om-d2, om-d3, ..., om-dn
+        ]`
+        oi-dj means from origin i to destination j
+        '''
         raw = self.raw_table()
         table = []
         for row in raw:
@@ -72,6 +132,11 @@ class GoogleDistMatrix():
         return table
 
     def dist(self, origin, des):
+        '''Get distance between one origin and one destination.
+        If the origin or destination is not included in the
+        requests, None will be returned. Otherwise a distance in
+        format `int(str)` will be returned.
+        '''
         table = self.dist_table()
         row, col = -1, -1
         for i in range(0, len(self.origins)):
