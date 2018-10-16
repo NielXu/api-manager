@@ -50,6 +50,7 @@ text = [                # A list of words that will be translated
     'Google is good'
 ]
 target = 'zh-CN'        # Target language, zh-CN: Chinese
+loc = '{Your json file location}'
 g = GoogleTranslate(text, target, loc)
 print(g.trans_map())    # Print a map in {input:translated} format
 ```
